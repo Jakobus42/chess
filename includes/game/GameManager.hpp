@@ -10,6 +10,7 @@ class GameManager {
         GameManager();
 
         void run();
+
     private:
         sf::RenderWindow _window;
         Board _board;

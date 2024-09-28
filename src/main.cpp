@@ -1,6 +1,11 @@
 #include "../includes/game/GameManager.hpp"
+#include <iostream>
 
 int main() {
-    game::GameManager game;
-    game.run();
+    try {
+        game::GameManager game;
+        game.run();
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
 }

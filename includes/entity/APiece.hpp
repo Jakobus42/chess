@@ -19,6 +19,7 @@ class APiece {
 
     private:
         sf::Sprite _sprite;
+        sf::Texture _texture;
         Color _color;
 };
 

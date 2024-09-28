@@ -6,16 +6,23 @@ namespace game {
 
 constexpr const uint8_t BOARD_SIZE = 8;
 
+struct Tile {
+    sf::Sprite sprite;
+    sf::Texture texture;
+};
+
 class Board {
     public:
-        Board() {};
-        Board(sf::Sprite& evenTile, sf::Sprite& oddTile);
+        Board();
 
         void display(sf::RenderWindow& window) const;
     private:
-        sf::Sprite _evenTile;
-        sf::Sprite _oddTile;
+        Tile _evenTile;
+        Tile _oddTile;
         std::unique_ptr<entity::APiece> _board[BOARD_SIZE][BOARD_SIZE];
+
+        void displayFrame(sf::RenderWindow& window) const;
+        void displayTiles(sf::RenderWindow& window) const;
 };
 
 }

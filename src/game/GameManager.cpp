@@ -3,15 +3,8 @@
 namespace game {
 
 GameManager::GameManager():
-_window(sf::RenderWindow{ { 1920u, 1080u }, "CMake SFML Project" }) { //TODO dont hardcode size
-    sf::Sprite oddTile, evenTile;
-    sf::Texture texture;
-
-    if(!texture.loadFromFile("../assets/")) {
-        
-    }
+_window(sf::RenderWindow{ { 1920u, 1080u }, "Chess" }) { //TODO dont hardcode size
     _window.setFramerateLimit(60);
-    
 }
 
 void GameManager::run() {
@@ -24,13 +17,14 @@ void GameManager::run() {
 }
 
 void GameManager::processEvent(const sf::Event& event) {
-    if (event.type == sf::Event::Closed) {
+    if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape) {
         _window.close();
     }
 }
 
 void GameManager::update() {
-    _window.clear();
+    _window.clear(sf::Color(70, 100, 40));
+    _board.display(_window);
     _window.display();
 }
 

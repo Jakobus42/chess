@@ -8,16 +8,13 @@ enum Color { BLACK, WHITE };
 
 class APiece {
     public:
-        APiece(const sf::Sprite& sprite, Color color);
+        APiece(const sf::Texture& texture, Color color);
         virtual ~APiece();
 
-        const sf::Sprite& getSprite() const;
+        sf::Sprite& getSprite();
+        virtual bool isValidMove(std::size_t x, std::size_t y) const = 0;
 
-        void move(std::size_t x, std::size_t y);
-
-        virtual bool isValidMove(std::size_t x, std::size_t y) = 0;
-
-    private:
+    protected:
         sf::Sprite _sprite;
         sf::Texture _texture;
         Color _color;

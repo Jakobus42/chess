@@ -4,7 +4,14 @@ namespace game {
 
 GameManager::GameManager():
 _window(sf::RenderWindow{ { 1920u, 1080u }, "CMake SFML Project" }) { //TODO dont hardcode size
+    sf::Sprite oddTile, evenTile;
+    sf::Texture texture;
+
+    if(!texture.loadFromFile("../assets/")) {
+        
+    }
     _window.setFramerateLimit(60);
+    
 }
 
 void GameManager::run() {

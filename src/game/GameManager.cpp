@@ -23,8 +23,12 @@ void GameManager::processEvent(const sf::Event& event) {
 }
 
 void GameManager::update() {
+    sf::RectangleShape frame(sf::Vector2f(static_cast<float>(100), static_cast<float>(100)));
+    frame.setPosition(0, 0);
+    frame.setFillColor(sf::Color::Red);
     _window.clear(sf::Color(70, 100, 40));
-    _board.display(_window);
+    _window.draw(frame);
+    // _board.display(_window);
     _window.display();
 }
 

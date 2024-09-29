@@ -13,7 +13,8 @@ class APiece {
 
         sf::Sprite& getSprite();
         Color getColor();
-        virtual bool isValidMove(std::size_t x, std::size_t y) const = 0;
+         virtual bool isValidMove(std::size_t fromX, std::size_t fromY, std::size_t toX, std::size_t toY,
+                             const std::unique_ptr<APiece> board[8][8]) const = 0;
 
     protected:
         sf::Sprite _sprite;

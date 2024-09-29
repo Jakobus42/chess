@@ -1,32 +1,25 @@
 #include "../../includes/game/GameManager.hpp"
 
+//TODO change all to std::pair or sf::Vector2
+
 namespace game {
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <iostream>
 
-void getScreenSizeMac() {
-    uint32_t displayCount;
-    CGGetActiveDisplayList(0, NULL, &displayCount);
-    std::cout << "Number of Active Displays: " << displayCount << std::endl;
-
-    CGDirectDisplayID displays[16];
-    CGGetActiveDisplayList(16, displays, &displayCount);
-
-    for (uint32_t i = 0; i < displayCount; ++i) {
-        CGRect displayBounds = CGDisplayBounds(displays[i]);
-        int width = displayBounds.size.width;
-        int height = displayBounds.size.height;
-        std::cout << "Display " << i + 1 << ": " << width << "x" << height << " pixels" << std::endl;
-    }
+GameManager::GameManager(): 
+_currentPlayer(entity::Color::WHITE),
+_window(sf::VideoMode::getDesktopMode(), "Chess", sf::Style::Default, sf::ContextSettings(0, 0, 16, 2, 0)) {
+    _window.setFramerateLimit(60);
 }
 
+std::pair<std::size_t, std::size_t> GameManager::pixelToGrid(const sf::Vector2i& pixelPos) const {
+    std::size_t gridX = static_cast<std::size_t>(pixelPos.x / TILE_SIZE);
+    std::size_t gridY = static_cast<std::size_t>(pixelPos.y / TILE_SIZE);
 
-GameManager::GameManager():
-_window(sf::VideoMode::getDesktopMode(), "Chess", sf::Style::Default, sf::ContextSettings(0, 0, 16, 2, 0)) { //TODO dont hardcode size
-    std::cout << _window.getSize().x << " " << _window.getSize().y << std::endl;
-    _window.setFramerateLimit(60);
-    getScreenSizeMac();
+    if (gridX >= BOARD_SIZE) gridX = BOARD_SIZE - 1;
+    if (gridY >= BOARD_SIZE) gridY = BOARD_SIZE - 1;
+    return {gridX, gridY};
 }
 
 void GameManager::run() {
@@ -39,8 +32,36 @@ void GameManager::run() {
 }
 
 void GameManager::processEvent(const sf::Event& event) {
-    if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape) {
+    if (event.type == sf::Event::Closed ||
+       (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
         _window.close();
+    }
+    if (event.type == sf::Event::MouseButtonPressed) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(_window);
+        std::pair<std::size_t, std::size_t> gridPos = pixelToGrid(mousePos);
+        std::cout << gridPos.first << " " << gridPos.second << std::endl;
+        if (_isSelectingFrom) {
+            _fromPosition = gridPos;
+            _isSelectingFrom = false;
+            std::cout << _fromPosition->first << " " << _fromPosition->second << std::endl;
+
+            //TODO highlight
+        } else {
+            if (_fromPosition.has_value()) {
+                bool moveSuccess = _board.requestMove(
+                    _fromPosition->first,
+                    _fromPosition->second,
+                    gridPos.first,
+                    gridPos.second,
+                    _currentPlayer
+                );
+                if (moveSuccess) {
+                    _currentPlayer = (_currentPlayer == entity::Color::WHITE) ? entity::Color::BLACK : entity::Color::WHITE;
+                }
+                _fromPosition = std::nullopt;
+                _isSelectingFrom = true;
+            }
+        }
     }
 }
 

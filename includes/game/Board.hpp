@@ -18,6 +18,7 @@
 namespace game {
 
 constexpr const uint8_t BOARD_SIZE = 8;
+constexpr const uint8_t TILE_SIZE = 128;
 
 struct Tile {
     sf::Sprite sprite;
@@ -31,9 +32,9 @@ class Board {
         Board();
 
         void display(sf::RenderWindow& window) const;
+        bool requestMove(std::size_t fromX, std::size_t fromY, std::size_t toX, std::size_t toY, entity::Color currentPlayer);
+        std::pair<std::size_t, std::size_t> getOrigin() const;
     private:
-        Tile _evenTile;
-        Tile _oddTile;
         std::unique_ptr<entity::APiece> _board[BOARD_SIZE][BOARD_SIZE];
         std::unordered_map<int, sf::Texture> _textures;
 
@@ -46,7 +47,7 @@ class Board {
         void initTiles();
         void initPieces(entity::Color color);
 
-        int generateTextureKey(Components component, entity::Color color);
+        int generateTextureKey(Components component, entity::Color color) const;
 };
 
 }

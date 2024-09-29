@@ -11,7 +11,10 @@ bool Rook::isValidMove(sf::Vector2<std::size_t> from, sf::Vector2<std::size_t> d
     if (!isPathClear(from, dest, board)) {
         return false;
     }
-    return !board[dest.y][dest.x] || isEnemyPiece(dest, board, _color);
+    if(board[dest.y][dest.x] && !isEnemyPiece(dest, board, _color)) {
+        return false;
+    }
+    return true;
 }
 
 }

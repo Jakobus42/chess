@@ -16,10 +16,13 @@ class APiece {
         Color getColor();
         virtual bool isValidMove(sf::Vector2<std::size_t> from, sf::Vector2<std::size_t> dest, const std::unique_ptr<APiece> board[8][8]) const = 0;
 
+        void setHasMoved(bool hasMoved);
+        bool getHasMoved() const;
     protected:
         sf::Sprite _sprite;
         sf::Texture _texture;
         Color _color;
+        bool _hasMoved;
 
         bool isPathClear(sf::Vector2<std::size_t> from, sf::Vector2<std::size_t> dest, const std::unique_ptr<APiece> board[8][8]) const;
         bool isEnemyPiece(sf::Vector2<std::size_t> dest, const std::unique_ptr<APiece> board[8][8], Color pieceColor) const;

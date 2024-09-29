@@ -34,6 +34,12 @@ void GameManager::run() {
 }
 
 void GameManager::processMouseEvent() {
+    if (_board.isPromotionActive()) {
+        Components selection = _board.getPromotionSelection(sf::Mouse::getPosition(_window));
+        if (selection != Components::NONE) {
+            _board.promotePawn(selection, entity::WHITE);
+        } 
+    }
     sf::Vector2<std::size_t> gridPos = pixelToGrid(sf::Mouse::getPosition(_window));
     if (gridPos.x == static_cast<std::size_t>(-1) || gridPos.y == static_cast<std::size_t>(-1)) {
         _board.clearHighlights();
@@ -87,6 +93,29 @@ void GameManager::processEvent(const sf::Event& event) {
 
 void GameManager::update() {
     _window.clear(sf::Color(70, 100, 40));
+    if (_board.isPromotionActive()) {
+        _board.displayPromotionOptions((_currentPlayer == entity::Color::WHITE) ? entity::Color::BLACK : entity::Color::WHITE);
+    }
+    if (_board.isCheckmate(_currentPlayer)) {
+        std::cout << (_currentPlayer == entity::Color::WHITE ? "White" : "Black") << " is checkmated. Game Over!" << std::endl;
+        _window.close();
+        return;
+    }
+    if (_board.isStalemate(_currentPlayer)) {
+        std::cout << "It's a stalemate. Game is a draw!" << std::endl;
+        _window.close();
+        return;
+    }
+    // if (_board.isInsufficientMaterial()) {
+    //     std::cout << "Draw by insufficient material!" << std::endl; //TODO
+    //     _window.close();
+    //     return;
+    // }
+    if (_board.isFiftyMoveRule()) {
+        std::cout << "Draw by fifty-move rule!" << std::endl;
+        _window.close();
+        return;
+    }
     _board.display();
     _window.display();
 }

@@ -54,4 +54,12 @@ bool APiece::isVerticalMove(sf::Vector2<std::size_t> from, sf::Vector2<std::size
     return from.x == dest.x;
 }
 
+void APiece::setHasMoved(bool hasMoved) {
+    _hasMoved = hasMoved;
+}
+
+bool APiece::getHasMoved() const {
+    return _hasMoved;
+}
+
 }

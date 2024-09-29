@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include "GameManager.hpp"
 #include "../entity/APiece.hpp"
 #include "../entity/Pawn.hpp"
 #include "../entity/Knight.hpp"
@@ -9,6 +8,9 @@
 #include "../entity/King.hpp"
 #include "../entity/Queen.hpp"
 #include "../entity/Bishop.hpp"
+
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 
 
 #include <unordered_map>

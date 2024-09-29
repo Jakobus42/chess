@@ -3,9 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include "Board.hpp"
 
-#define SCREEN_WIDTH 1920
-#define SCREEN_HEIGHT 1080
-
 namespace game {
 
 class GameManager {

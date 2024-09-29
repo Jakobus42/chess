@@ -4,7 +4,7 @@
 
 namespace entity {
 
-enum Color { BLACK, WHITE };
+enum Color { NONE = 0, BLACK, WHITE };
 
 class APiece {
     public:

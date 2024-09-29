@@ -17,21 +17,25 @@ void Board::loadTexture(const std::string& path, int key) {
     _textures[key] = texture;
 }
 
+int Board::generateTextureKey(Components component, entity::Color color) {
+    return (static_cast<int>(color) << 8) | static_cast<int>(component);
+}
+
 void Board::initTextures() {
-    loadTexture("assets/tiles/tile1.png", static_cast<int>(Components::EVEN_TILE));
-    loadTexture("assets/tiles/tile2.png", static_cast<int>(Components::ODD_TILE));
-    loadTexture("assets/pieces/b_pawn.png", static_cast<int>(Components::PAWN) << static_cast<int>(entity::Color::BLACK));
-    loadTexture("assets/pieces/w_pawn.png", static_cast<int>(Components::PAWN) << static_cast<int>(entity::Color::WHITE));
-    loadTexture("assets/pieces/b_knight.png", static_cast<int>(Components::KNIGHT) << static_cast<int>(entity::Color::BLACK));
-    loadTexture("assets/pieces/w_knight.png", static_cast<int>(Components::KNIGHT) << static_cast<int>(entity::Color::WHITE));
-    loadTexture("assets/pieces/b_bishop.png", static_cast<int>(Components::BISHOP) << static_cast<int>(entity::Color::BLACK));
-    loadTexture("assets/pieces/w_bishop.png", static_cast<int>(Components::BISHOP) << static_cast<int>(entity::Color::WHITE));
-    loadTexture("assets/pieces/b_rook.png", static_cast<int>(Components::ROOK) << static_cast<int>(entity::Color::BLACK));
-    loadTexture("assets/pieces/w_rook.png", static_cast<int>(Components::ROOK) << static_cast<int>(entity::Color::WHITE));
-    loadTexture("assets/pieces/b_king.png", static_cast<int>(Components::KING) << static_cast<int>(entity::Color::BLACK));
-    loadTexture("assets/pieces/w_king.png", static_cast<int>(Components::KING) << static_cast<int>(entity::Color::WHITE));
-    loadTexture("assets/pieces/b_queen.png", static_cast<int>(Components::QUEEN) << static_cast<int>(entity::Color::BLACK));
-    loadTexture("assets/pieces/w_queen.png", static_cast<int>(Components::QUEEN) << static_cast<int>(entity::Color::WHITE));
+    loadTexture("assets/tiles/tile1.png", generateTextureKey(Components::EVEN_TILE, entity::Color::NONE));
+    loadTexture("assets/tiles/tile2.png", generateTextureKey(Components::ODD_TILE, entity::Color::NONE));
+    loadTexture("assets/pieces/b_pawn.png", generateTextureKey(Components::PAWN, entity::Color::BLACK));
+    loadTexture("assets/pieces/w_pawn.png", generateTextureKey(Components::PAWN, entity::Color::WHITE));
+    loadTexture("assets/pieces/b_knight.png", generateTextureKey(Components::KNIGHT, entity::Color::BLACK));
+    loadTexture("assets/pieces/w_knight.png", generateTextureKey(Components::KNIGHT, entity::Color::WHITE));
+    loadTexture("assets/pieces/b_bishop.png", generateTextureKey(Components::BISHOP, entity::Color::BLACK));
+    loadTexture("assets/pieces/w_bishop.png", generateTextureKey(Components::BISHOP, entity::Color::WHITE));
+    loadTexture("assets/pieces/b_rook.png",  generateTextureKey(Components::ROOK, entity::Color::BLACK));
+    loadTexture("assets/pieces/w_rook.png",  generateTextureKey(Components::ROOK, entity::Color::WHITE));
+    loadTexture("assets/pieces/b_king.png",  generateTextureKey(Components::KING, entity::Color::BLACK));
+    loadTexture("assets/pieces/w_king.png",  generateTextureKey(Components::KING, entity::Color::WHITE));
+    loadTexture("assets/pieces/b_queen.png",  generateTextureKey(Components::QUEEN, entity::Color::BLACK));
+    loadTexture("assets/pieces/w_queen.png",  generateTextureKey(Components::QUEEN, entity::Color::WHITE));
 }
 
 void Board::initTiles() {
@@ -47,29 +51,30 @@ void Board::initPieces(entity::Color color) {
 
     for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
         _board[pawnRow][x] = std::make_unique<entity::Pawn>(
-            _textures.at(static_cast<int>(Components::PAWN) << static_cast<int>(color)), color);
+            _textures.at(generateTextureKey(Components::PAWN, color)), color);
     }
     std::vector<std::unique_ptr<entity::APiece>> backRowPieces;
-     backRowPieces.push_back(std::make_unique<entity::Rook>(
-             _textures.at(static_cast<int>(Components::ROOK) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::Knight>(
-            _textures.at(static_cast<int>(Components::KNIGHT) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::Bishop>(
-             _textures.at(static_cast<int>(Components::BISHOP) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::Queen>(
-            _textures.at(static_cast<int>(Components::QUEEN) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::King>(
-             _textures.at(static_cast<int>(Components::KING) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::Bishop>(
-            _textures.at(static_cast<int>(Components::BISHOP) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::Knight>(
-             _textures.at(static_cast<int>(Components::KNIGHT) << static_cast<int>(color)), color));
-     backRowPieces.push_back(std::make_unique<entity::Rook>(
-             _textures.at(static_cast<int>(Components::ROOK) << static_cast<int>(color)), color));
-     for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
-         std::size_t posX = (color == entity::Color::WHITE) ? x : BOARD_SIZE - 1 - x;
-         _board[backRow][posX] = std::move(backRowPieces[x]);
-     }
+    backRowPieces.push_back(std::make_unique<entity::Rook>(
+        _textures.at(generateTextureKey(Components::ROOK, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Knight>(
+        _textures.at(generateTextureKey(Components::KNIGHT, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Bishop>(
+        _textures.at(generateTextureKey(Components::BISHOP, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Queen>(
+        _textures.at(generateTextureKey(Components::QUEEN, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::King>(
+        _textures.at(generateTextureKey(Components::KING, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Bishop>(
+        _textures.at(generateTextureKey(Components::BISHOP, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Knight>(
+        _textures.at(generateTextureKey(Components::KNIGHT, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Rook>(
+        _textures.at(generateTextureKey(Components::ROOK, color)), color));
+
+    for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
+        std::size_t posX = (color == entity::Color::WHITE) ? x : BOARD_SIZE - 1 - x;
+        _board[backRow][posX] = std::move(backRowPieces[x]);
+    }
 }
 
 void Board::displayBoard(sf::RenderWindow& window, float offsetX, float offsetY, float frameBorder) const {

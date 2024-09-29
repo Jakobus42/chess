@@ -20,7 +20,7 @@ struct Tile {
     sf::Texture texture;
 };
 
-enum class Components { ODD_TILE, EVEN_TILE, PAWN, KNIGHT, BISHOP, KING, QUEEN, ROOK };
+enum class Components { ODD_TILE = 0, EVEN_TILE, PAWN, KNIGHT, BISHOP, KING, QUEEN, ROOK };
 
 class Board {
     public:
@@ -43,6 +43,8 @@ class Board {
         void initTextures();
 
         void loadTexture(const std::string& path, int key);
+
+        int generateTextureKey(Components component, entity::Color color);
 };
 
 }

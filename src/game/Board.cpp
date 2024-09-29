@@ -54,23 +54,14 @@ void Board::initPieces(entity::Color color) {
             _textures.at(generateTextureKey(Components::PAWN, color)), color);
     }
     std::vector<std::unique_ptr<entity::APiece>> backRowPieces;
-    backRowPieces.push_back(std::make_unique<entity::Rook>(
-        _textures.at(generateTextureKey(Components::ROOK, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::Knight>(
-        _textures.at(generateTextureKey(Components::KNIGHT, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::Bishop>(
-        _textures.at(generateTextureKey(Components::BISHOP, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::Queen>(
-        _textures.at(generateTextureKey(Components::QUEEN, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::King>(
-        _textures.at(generateTextureKey(Components::KING, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::Bishop>(
-        _textures.at(generateTextureKey(Components::BISHOP, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::Knight>(
-        _textures.at(generateTextureKey(Components::KNIGHT, color)), color));
-    backRowPieces.push_back(std::make_unique<entity::Rook>(
-        _textures.at(generateTextureKey(Components::ROOK, color)), color));
-
+    backRowPieces.push_back(std::make_unique<entity::Rook>(_textures.at(generateTextureKey(Components::ROOK, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Knight>(_textures.at(generateTextureKey(Components::KNIGHT, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Bishop>(_textures.at(generateTextureKey(Components::BISHOP, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Queen>(_textures.at(generateTextureKey(Components::QUEEN, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::King>(_textures.at(generateTextureKey(Components::KING, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Bishop>(_textures.at(generateTextureKey(Components::BISHOP, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Knight>(_textures.at(generateTextureKey(Components::KNIGHT, color)), color));
+    backRowPieces.push_back(std::make_unique<entity::Rook>(_textures.at(generateTextureKey(Components::ROOK, color)), color));
     for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
         std::size_t posX = (color == entity::Color::WHITE) ? x : BOARD_SIZE - 1 - x;
         _board[backRow][posX] = std::move(backRowPieces[x]);

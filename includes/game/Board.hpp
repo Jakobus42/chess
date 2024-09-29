@@ -36,13 +36,11 @@ class Board {
         void displayFrame(sf::RenderWindow& window, float offsetX, float offsetY, std::size_t frameSize) const;
         void displayBoard(sf::RenderWindow& window, float offsetX, float offsetY, float frameBorder) const;
 
-        void initTiles();
-
-        void initPieces(entity::Color color);
-        
         void initTextures();
-
         void loadTexture(const std::string& path, int key);
+        
+        void initTiles();
+        void initPieces(entity::Color color);
 
         int generateTextureKey(Components component, entity::Color color);
 };

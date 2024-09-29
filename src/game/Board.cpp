@@ -106,7 +106,7 @@ void Board::display(sf::RenderWindow& window) const {
     const float offsetX = (window.getSize().x - frameSize) / 2.0f;
     const float offsetY = (window.getSize().y - frameSize) / 2.0f;
  
-    std::cout << frameBorder << tileSize << boardSize << frameSize << offsetX << offsetY << std::endl;
+    std::cout << frameBorder << " " << tileSize << " " << boardSize << "" << frameSize << " " << offsetX << " " << offsetY << std::endl;
 
 
     displayFrame(window, offsetX, offsetY, frameSize);

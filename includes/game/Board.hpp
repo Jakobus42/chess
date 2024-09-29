@@ -2,6 +2,13 @@
 
 #include "../entity/APiece.hpp"
 #include "../entity/Pawn.hpp"
+#include "../entity/Knight.hpp"
+#include "../entity/Rook.hpp"
+#include "../entity/King.hpp"
+#include "../entity/Queen.hpp"
+#include "../entity/Bishop.hpp"
+
+
 #include <unordered_map>
 
 namespace game {
@@ -13,7 +20,7 @@ struct Tile {
     sf::Texture texture;
 };
 
-enum class Components { ODD_TILE, EVEN_TILE, PAWN };
+enum class Components { ODD_TILE, EVEN_TILE, PAWN, KNIGHT, BISHOP, KING, QUEEN, ROOK };
 
 class Board {
     public:

@@ -3,7 +3,7 @@
 namespace game {
 
 GameManager::GameManager():
-_window(sf::RenderWindow{ { SCREEN_WIDTH, SCREEN_HEIGHT, sf::VideoMode::getDesktopMode().bitsPerPixel}, "Chess" }) { //TODO dont hardcode size
+_window(sf::VideoMode::getDesktopMode(), "Chess") { //TODO dont hardcode size
     _window.setFramerateLimit(60);
 }
 

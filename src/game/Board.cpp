@@ -9,24 +9,24 @@ Board::Board() {
     initPieces(entity::Color::WHITE);
 }
 
-void Board::loadTexture(const std::string& path, Components component) {
+void Board::loadTexture(const std::string& path, int key) {
     sf::Texture texture;
     if(!texture.loadFromFile(path)) {
         throw std::runtime_error("cant load " + path);
     }
-    _textures[component] = texture;
+    _textures[key] = texture;
 }
 
 void Board::initTextures() {
-    loadTexture("assets/tiles/tile1.png", Components::EVEN_TILE);
-    loadTexture("assets/tiles/tile2.png", Components::ODD_TILE);
-    loadTexture("assets/pieces/b_pawn.png", Components::PAWN);
-    loadTexture("assets/pieces/w_pawn.png", Components::PAWN);
+    loadTexture("assets/tiles/tile1.png", static_cast<int>(Components::EVEN_TILE));
+    loadTexture("assets/tiles/tile2.png", static_cast<int>(Components::ODD_TILE));
+    loadTexture("assets/pieces/b_pawn.png", static_cast<int>(Components::PAWN) << static_cast<int>(entity::Color::BLACK));
+    loadTexture("assets/pieces/w_pawn.png", static_cast<int>(Components::PAWN) << static_cast<int>(entity::Color::WHITE));
 }
 
 void Board::initTiles() {
-    _evenTile.texture = _textures.at(Components::EVEN_TILE);
-    _oddTile.texture = _textures.at(Components::ODD_TILE);
+    _evenTile.texture = _textures.at(static_cast<int>(Components::EVEN_TILE));
+    _oddTile.texture = _textures.at(static_cast<int>(Components::ODD_TILE));
     _evenTile.sprite.setTexture(_evenTile.texture);
     _oddTile.sprite.setTexture(_oddTile.texture);   
 }
@@ -37,7 +37,7 @@ void Board::initPieces(entity::Color color) {
 
     for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
         _board[pawnRow][x] = std::make_unique<entity::Pawn>(
-            _textures.at(Components::PAWN), color);
+            _textures.at(static_cast<int>(Components::PAWN) << static_cast<int>(color)), color);
     }
     std::vector<std::unique_ptr<entity::APiece>> backRowPieces;
     // backRowPieces.push_back(std::make_unique<entity::Rook>(_textures.at(Components::ROOK), color));

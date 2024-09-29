@@ -14,7 +14,19 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp src/game/GameManager.cpp src/game/Board.cpp src/entity/APiece.cpp src/entity/Pawn.cpp)
+add_executable(
+main 
+src/main.cpp 
+src/game/GameManager.cpp 
+src/game/Board.cpp 
+src/entity/APiece.cpp
+src/entity/Pawn.cpp
+src/entity/Bishop.cpp
+src/entity/King.cpp
+src/entity/Knight.cpp
+src/entity/Queen.cpp
+src/entity/Rook.cpp
+)
 target_link_libraries(main PRIVATE sfml-graphics)
 target_compile_features(main PRIVATE cxx_std_23)
 

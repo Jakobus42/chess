@@ -24,7 +24,7 @@ class Board {
         Tile _evenTile;
         Tile _oddTile;
         std::unique_ptr<entity::APiece> _board[BOARD_SIZE][BOARD_SIZE];
-        std::unordered_map<Components, sf::Texture> _textures;
+        std::unordered_map<int, sf::Texture> _textures;
 
         void displayFrame(sf::RenderWindow& window) const;
         void displayBoard(sf::RenderWindow& window) const;
@@ -35,7 +35,7 @@ class Board {
         
         void initTextures();
 
-        void loadTexture(const std::string& path, Components component);
+        void loadTexture(const std::string& path, int key);
 };
 
 }

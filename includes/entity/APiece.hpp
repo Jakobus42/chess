@@ -12,6 +12,7 @@ class APiece {
         virtual ~APiece();
 
         sf::Sprite& getSprite();
+        Color getColor();
         virtual bool isValidMove(std::size_t x, std::size_t y) const = 0;
 
     protected:

@@ -12,4 +12,6 @@ APiece::~APiece() {}
 
 sf::Sprite& APiece::getSprite() { return _sprite; }
 
+Color APiece::getColor() { return _color; }
+
 }

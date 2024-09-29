@@ -13,7 +13,7 @@ struct Tile {
     sf::Texture texture;
 };
 
-enum Components { ODD_TILE, EVEN_TILE, PAWN };
+enum class Components { ODD_TILE, EVEN_TILE, PAWN };
 
 class Board {
     public:
@@ -30,7 +30,9 @@ class Board {
         void displayBoard(sf::RenderWindow& window) const;
 
         void initTiles();
-        void initPieces();
+
+        void initPieces(entity::Color color);
+        
         void initTextures();
 
         void loadTexture(const std::string& path, Components component);

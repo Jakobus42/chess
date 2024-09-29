@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "../entity/APiece.hpp"
 #include "../entity/Pawn.hpp"
 #include "../entity/Knight.hpp"

@@ -9,17 +9,19 @@ namespace game {
 
 GameManager::GameManager(): 
 _currentPlayer(entity::Color::WHITE),
-_window(sf::VideoMode::getDesktopMode(), "Chess", sf::Style::Default, sf::ContextSettings(0, 0, 16, 2, 0)) {
+_window(sf::VideoMode::getDesktopMode(), "Chess", sf::Style::Default, sf::ContextSettings(0, 0, 16, 2, 0)),
+_board(_window),
+_isSelecting(false) {
     _window.setFramerateLimit(60);
 }
 
-std::pair<std::size_t, std::size_t> GameManager::pixelToGrid(const sf::Vector2i& pixelPos) const {
-    std::size_t gridX = static_cast<std::size_t>(pixelPos.x / TILE_SIZE);
-    std::size_t gridY = static_cast<std::size_t>(pixelPos.y / TILE_SIZE);
-
-    if (gridX >= BOARD_SIZE) gridX = BOARD_SIZE - 1;
-    if (gridY >= BOARD_SIZE) gridY = BOARD_SIZE - 1;
-    return {gridX, gridY};
+sf::Vector2<std::size_t> GameManager::pixelToGrid(const sf::Vector2i& pixelPos) const {
+    float adjustedX = static_cast<float>(pixelPos.x) - _board.getOffsetX() - _board.getFrameBorder();
+    float adjustedY = static_cast<float>(pixelPos.y) - _board.getOffsetY() - _board.getFrameBorder();
+    if (adjustedX < 0 || adjustedY < 0 || adjustedX >= BOARD_SIZE * TILE_SIZE || adjustedY >= BOARD_SIZE * TILE_SIZE) {
+        return {static_cast<std::size_t>(-1), static_cast<std::size_t>(-1)};
+    }
+    return {static_cast<std::size_t>(adjustedX / TILE_SIZE), static_cast<std::size_t>(adjustedY / TILE_SIZE)};
 }
 
 void GameManager::run() {
@@ -31,43 +33,61 @@ void GameManager::run() {
     }
 }
 
-void GameManager::processEvent(const sf::Event& event) {
-    if (event.type == sf::Event::Closed ||
-       (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
-        _window.close();
+void GameManager::processMouseEvent() {
+    sf::Vector2<std::size_t> gridPos = pixelToGrid(sf::Mouse::getPosition(_window));
+    if (gridPos.x == static_cast<std::size_t>(-1) || gridPos.y == static_cast<std::size_t>(-1)) {
+        _board.clearHighlights();
+        _isSelecting = true;
+        return;
     }
-    if (event.type == sf::Event::MouseButtonPressed) {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(_window);
-        std::pair<std::size_t, std::size_t> gridPos = pixelToGrid(mousePos);
-        std::cout << gridPos.first << " " << gridPos.second << std::endl;
-        if (_isSelectingFrom) {
-            _fromPosition = gridPos;
-            _isSelectingFrom = false;
-            std::cout << _fromPosition->first << " " << _fromPosition->second << std::endl;
+    if (_isSelecting) {
+        _board.clearHighlights();
+        _fromPosition = gridPos;
+        _board.highlightTile(_fromPosition);
+        _board.highlightValidMoves(_fromPosition, _currentPlayer);
+        _isSelecting = false;
+        return;
+    }
+    if (_fromPosition == gridPos) {
+        _board.clearHighlights();
+        _isSelecting = true;
+        return;
+    }
+    _board.clearHighlights();
+    if (_board.requestMove(_fromPosition, gridPos, _currentPlayer)) {
+        _currentPlayer = (_currentPlayer == entity::Color::WHITE) ? entity::Color::BLACK : entity::Color::WHITE;
+    } else {
+        _fromPosition = gridPos;
+        _board.highlightTile(_fromPosition);
+        _board.highlightValidMoves(_fromPosition, _currentPlayer);
+    }
+}
 
-            //TODO highlight
-        } else {
-            if (_fromPosition.has_value()) {
-                bool moveSuccess = _board.requestMove(
-                    _fromPosition->first,
-                    _fromPosition->second,
-                    gridPos.first,
-                    gridPos.second,
-                    _currentPlayer
-                );
-                if (moveSuccess) {
-                    _currentPlayer = (_currentPlayer == entity::Color::WHITE) ? entity::Color::BLACK : entity::Color::WHITE;
-                }
-                _fromPosition = std::nullopt;
-                _isSelectingFrom = true;
-            }
+void GameManager::processEvent(const sf::Event& event) {
+    switch (event.type) {
+        case sf::Event::Closed: {
+            _window.close();
+            break;
         }
+        case sf::Event::KeyPressed: {
+            if (event.key.code == sf::Keyboard::Escape) {
+                _window.close();
+            }
+            break;
+        }
+        case sf::Event::MouseButtonPressed: {
+            if(event.mouseButton.button == sf::Mouse::Left) {
+                processMouseEvent();
+            }
+            break;
+        }
+        default: break;
     }
 }
 
 void GameManager::update() {
     _window.clear(sf::Color(70, 100, 40));
-    _board.display(_window);
+    _board.display();
     _window.display();
 }
 

@@ -20,34 +20,45 @@ namespace game {
 constexpr const uint8_t BOARD_SIZE = 8;
 constexpr const uint8_t TILE_SIZE = 128;
 
-struct Tile {
-    sf::Sprite sprite;
-    sf::Texture texture;
-};
-
 enum class Components { ODD_TILE = 0, EVEN_TILE, PAWN, KNIGHT, BISHOP, KING, QUEEN, ROOK };
 
 class Board {
     public:
-        Board();
+        Board(sf::RenderWindow& window);
 
-        void display(sf::RenderWindow& window) const;
-        bool requestMove(std::size_t fromX, std::size_t fromY, std::size_t toX, std::size_t toY, entity::Color currentPlayer);
-        std::pair<std::size_t, std::size_t> getOrigin() const;
+        void display() const;
+        bool requestMove(sf::Vector2<std::size_t> from, sf::Vector2<std::size_t> dest, entity::Color currentPlayer);
+        
+        void highlightTile(sf::Vector2<std::size_t> tile);
+        void clearHighlights();
+
+        void highlightValidMoves(sf::Vector2<std::size_t> pos, entity::Color currentPlayer);
+
+        float getOffsetX() const;
+        float getOffsetY() const;
+        float getFrameBorder() const;
     private:
         std::unique_ptr<entity::APiece> _board[BOARD_SIZE][BOARD_SIZE];
         std::unordered_map<int, sf::Texture> _textures;
+        std::vector<sf::Vector2<std::size_t>> _highlightedTiles;
+        sf::RenderWindow& _window;
+        float _offsetX;
+        float _offsetY;
+        float _frameBorder;
 
-        void displayFrame(sf::RenderWindow& window, float offsetX, float offsetY, std::size_t frameSize) const;
-        void displayBoard(sf::RenderWindow& window, float offsetX, float offsetY, float frameBorder) const;
+        void displayFrame(std::size_t frameSize) const;
+        void displayBoard() const;
+        void displayHighlightedTiles() const;
 
         void initTextures();
         void loadTexture(const std::string& path, int key);
         
-        void initTiles();
         void initPieces(entity::Color color);
 
         int generateTextureKey(Components component, entity::Color color) const;
+
+        template <typename T>
+        const std::unique_ptr<entity::APiece>& getPiece(entity::Color color) const;
 };
 
 }

@@ -2,7 +2,13 @@
 
 namespace game {
 
-Board::Board() {
+//TODO tiles differen colors for selection
+
+Board::Board(sf::RenderWindow& window): 
+_window(window),
+_frameBorder(5) {
+    _offsetX = ((window.getSize().x - (BOARD_SIZE * TILE_SIZE + 2 * _frameBorder)) / 2.0f);
+    _offsetY = ((window.getSize().y - (BOARD_SIZE * TILE_SIZE + 2 * _frameBorder)) / 2.0f);
     initTextures();
     initPieces(entity::Color::BLACK);
     initPieces(entity::Color::WHITE);
@@ -16,28 +22,29 @@ void Board::loadTexture(const std::string& path, int key) {
     _textures[key] = std::move(texture);
 }
 
-bool Board::requestMove(std::size_t fromX, std::size_t fromY, std::size_t toX, std::size_t toY, entity::Color currentPlayer) {
-    std::cout << fromX << " " << fromY << std::endl;
-    std::cout << toX << " " << toY << std::endl;
-    if(fromX >= BOARD_SIZE || fromY >= BOARD_SIZE || toX >= BOARD_SIZE || toY >= BOARD_SIZE) {
+bool Board::requestMove(sf::Vector2<std::size_t> from, sf::Vector2<std::size_t> dest, entity::Color currentPlayer) {
+    if(from.x >= BOARD_SIZE || from.y >= BOARD_SIZE || dest.x >= BOARD_SIZE || dest.y >= BOARD_SIZE) {
         return false;
     }
-    auto& movingPiece = _board[fromY][fromX];
+    if(from == dest) {
+        return false;
+    }
+    auto& movingPiece = _board[from.y][from.x];
     if(!movingPiece) {
         return false;
     }
     if(movingPiece->getColor() != currentPlayer) {
         return false;
     }
-    if(!movingPiece->isValidMove(fromX, fromY, toX, toY, _board)) {
+    if(!movingPiece->isValidMove(from, dest, _board)) {
         return false;
     }
-    auto& destinationPiece = _board[toY][toX];
+    auto& destinationPiece = _board[dest.y][dest.x];
     if(destinationPiece && destinationPiece->getColor() == currentPlayer) {
         return false;
     }
-    _board[toY][toX] = std::move(movingPiece);
-    _board[fromY][fromX] = nullptr;
+    _board[dest.y][dest.x] = std::move(movingPiece);
+    _board[from.y][from.x] = nullptr;
     return true;
 }
 
@@ -62,6 +69,30 @@ void Board::initTextures() {
     loadTexture("assets/pieces/w_rook.png",  generateTextureKey(Components::ROOK, entity::Color::WHITE));
     loadTexture("assets/pieces/w_queen.png", generateTextureKey(Components::QUEEN, entity::Color::WHITE));
     loadTexture("assets/pieces/w_king.png",  generateTextureKey(Components::KING, entity::Color::WHITE));
+}
+
+template <typename T>
+const std::unique_ptr<entity::APiece>& Board::getPiece(entity::Color color) const {
+    for (std::size_t y = 0; y < BOARD_SIZE; ++y) {
+        for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
+            if(const auto& piece = dynamic_cast<T>(_board[y][x])) {
+                return piece;
+            }
+        }
+    }
+}
+
+void Board::highlightTile(sf::Vector2<std::size_t> tile) {
+    for (const auto& highlighted : _highlightedTiles) {
+        if (highlighted == tile) {
+            return;
+        }
+    }
+    _highlightedTiles.push_back(tile);
+}
+
+void Board::clearHighlights() {
+    _highlightedTiles.clear();
 }
 
 void Board::initPieces(entity::Color color) {
@@ -89,45 +120,87 @@ void Board::initPieces(entity::Color color) {
     }
 }
 
-void Board::displayBoard(sf::RenderWindow& window, float offsetX, float offsetY, float frameBorder) const {
-    for (uint8_t y = 0; y < BOARD_SIZE; ++y) {
-        for (uint8_t x = 0; x < BOARD_SIZE; ++x) {
-            sf::Texture tileTex = ((x + y) % 2 == 0) ? _textures.at(generateTextureKey(Components::EVEN_TILE, entity::Color::NONE)) : _textures.at(generateTextureKey(Components::ODD_TILE, entity::Color::NONE));
-            sf::Sprite tile(tileTex);
-            entity::APiece* piece = _board[y][x].get();
-            tile.setPosition(x * TILE_SIZE + offsetX + frameBorder, y * TILE_SIZE + offsetY + frameBorder);
-            window.draw(tile);
-            if(piece) {
-                float newPieceX = x * TILE_SIZE + (TILE_SIZE / 2.0f) + offsetX + frameBorder;
-                float newPieceY = y * TILE_SIZE + (TILE_SIZE / 2.0f) + offsetY + frameBorder;
-                if(piece->getColor() == entity::Color::WHITE) {
-                    piece->getSprite().setColor(sf::Color::White);
-                }
-                piece->getSprite().setOrigin(piece->getSprite().getTexture()->getSize().x / 2.0f, piece->getSprite().getTexture()->getSize().y / 2.0f);
-                piece->getSprite().setScale(0.9f, 0.9f);
-                piece->getSprite().setPosition(newPieceX, newPieceY);
-                window.draw(piece->getSprite());
+void Board::displayFrame(std::size_t frameSize) const {
+    sf::RectangleShape frame(sf::Vector2f(static_cast<float>(frameSize), static_cast<float>(frameSize)));
+    frame.setPosition(_offsetX, _offsetY);
+    frame.setFillColor(sf::Color::Black);
+    _window.draw(frame);
+}
+
+void Board::highlightValidMoves(sf::Vector2<std::size_t> pos, entity::Color currentPlayer) {
+    if (pos.x >= BOARD_SIZE || pos.y >= BOARD_SIZE) {
+        return;
+    }
+    if (!_board[pos.y][pos.x]) {
+        return;
+    }
+    if(_board[pos.y][pos.x].get()->getColor() != currentPlayer) {
+        return ;
+    }
+    for (std::size_t y = 0; y < BOARD_SIZE; ++y) {
+        for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
+            if (_board[pos.y][pos.x]->isValidMove(pos, {x, y}, _board)) {
+                highlightTile(sf::Vector2<std::size_t>(x, y));
             }
         }
     }
 }
 
-void Board::displayFrame(sf::RenderWindow& window, float offsetX, float offsetY, std::size_t frameSize) const {
-    sf::RectangleShape frame(sf::Vector2f(static_cast<float>(frameSize), static_cast<float>(frameSize)));
-    frame.setPosition(offsetX, offsetY);
-    frame.setFillColor(sf::Color::Black);
-    window.draw(frame);
+void Board::displayHighlightedTiles() const {
+    sf::RectangleShape highlightShape(sf::Vector2f(static_cast<float>(TILE_SIZE), static_cast<float>(TILE_SIZE)));
+    highlightShape.setFillColor(sf::Color(255, 255, 0, 100));
+
+    for (const auto& tile : _highlightedTiles) {
+        float posX = static_cast<float>(tile.x * TILE_SIZE) + _offsetX + _frameBorder;
+        float posY = static_cast<float>(tile.y * TILE_SIZE) + _offsetY + _frameBorder;
+        highlightShape.setPosition(posX, posY);
+        _window.draw(highlightShape);
+    }
 }
 
-void Board::display(sf::RenderWindow& window) const {
-    const float frameBorder = 5.0f;
+void Board::displayBoard() const {
+    for (std::size_t y = 0; y < BOARD_SIZE; ++y) {
+        for (std::size_t x = 0; x < BOARD_SIZE; ++x) {
+            sf::Texture tileTex = ((x + y) % 2 == 0) ? _textures.at(generateTextureKey(Components::EVEN_TILE, entity::Color::NONE)) 
+            : _textures.at(generateTextureKey(Components::ODD_TILE, entity::Color::NONE));
+            sf::Sprite tile(tileTex);
+            entity::APiece* piece = _board[y][x].get();
+            tile.setPosition(x * TILE_SIZE + _offsetX + _frameBorder, y * TILE_SIZE + _offsetY + _frameBorder);
+            _window.draw(tile);
+            if(piece) {
+                float newPieceX = x * TILE_SIZE + (TILE_SIZE / 2.0f) + _offsetX + _frameBorder;
+                float newPieceY = y * TILE_SIZE + (TILE_SIZE / 2.0f) + _offsetY + _frameBorder;
+                if(piece->getColor() == entity::Color::WHITE) {
+                    piece->getSprite().setColor(sf::Color::White);
+                }
+                piece->getSprite().setOrigin(piece->getSprite().getTexture()->getSize().x / 2.0f, 
+                                            piece->getSprite().getTexture()->getSize().y / 2.0f);
+                piece->getSprite().setScale(0.9f, 0.9f);
+                piece->getSprite().setPosition(newPieceX, newPieceY);
+                _window.draw(piece->getSprite());
+            }
+        }
+    }
+}
+
+void Board::display() const {
     const std::size_t boardSize = BOARD_SIZE * TILE_SIZE;
-    const std::size_t frameSize = boardSize + 2 * frameBorder;
-    const float offsetX = (window.getSize().x - frameSize) / 2.0f;
-    const float offsetY = (window.getSize().y - frameSize) / 2.0f;
- 
-    displayFrame(window, offsetX, offsetY, frameSize);
-    displayBoard(window, offsetX, offsetY, frameBorder);
+    const std::size_t frameSize = boardSize + 2 * _frameBorder;
+    displayFrame(frameSize);
+    displayBoard();
+    displayHighlightedTiles();
+}
+
+float Board::getOffsetX() const {
+    return _offsetX;
+}
+
+float Board::getOffsetY() const {
+    return _offsetY;
+}
+
+float Board::getFrameBorder() const {
+    return _frameBorder;
 }
 
 } // namespace game

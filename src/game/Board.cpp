@@ -107,7 +107,7 @@ void Board::display(sf::RenderWindow& window) const {
     const float offsetY = (window.getSize().y - frameSize) / 2.0f;
 
     displayFrame(window, offsetX, offsetY, frameSize);
-    displayBoard(window, offsetX, offsetY, frameBorder);
+    // displayBoard(window, offsetX, offsetY, frameBorder);
 }
 
 }

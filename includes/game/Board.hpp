@@ -33,8 +33,8 @@ class Board {
         std::unique_ptr<entity::APiece> _board[BOARD_SIZE][BOARD_SIZE];
         std::unordered_map<int, sf::Texture> _textures;
 
-        void displayFrame(sf::RenderWindow& window) const;
-        void displayBoard(sf::RenderWindow& window) const;
+        void displayFrame(sf::RenderWindow& window, float offsetX, float offsetY, std::size_t frameSize) const;
+        void displayBoard(sf::RenderWindow& window, float offsetX, float offsetY, float frameBorder) const;
 
         void initTiles();
 

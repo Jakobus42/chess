@@ -72,25 +72,22 @@ void Board::initPieces(entity::Color color) {
      }
 }
 
-void Board::displayBoard(sf::RenderWindow& window) const {
-    const std::size_t boardSize = BOARD_SIZE * _oddTile.texture.getSize().x;
-    const float offsetX = (window.getSize().x - boardSize) / 2.0f;
-    const float offsetY = (window.getSize().y - boardSize) / 2.0f;
-
+void Board::displayBoard(sf::RenderWindow& window, float offsetX, float offsetY, float frameBorder) const {
+    const std::size_t tileSize = _oddTile.texture.getSize().x;
     for (uint8_t y = 0; y < BOARD_SIZE; ++y) {
         for (uint8_t x = 0; x < BOARD_SIZE; ++x) {
             sf::Sprite tile = ((x + y) % 2 == 0) ? _evenTile.sprite : _oddTile.sprite;
             entity::APiece* piece = _board[y][x].get();
-            tile.setPosition(x * _oddTile.texture.getSize().x + offsetX, y * _oddTile.texture.getSize().x + offsetY);
+            tile.setPosition(x * tileSize + offsetX + frameBorder, y * tileSize + offsetY + frameBorder);
             window.draw(tile);
             if(piece) {
-                std::size_t newPieceX = (x * _oddTile.texture.getSize().x) + (_oddTile.texture.getSize().x / 2)  + offsetX;
-                std::size_t newPieceY = (y *  _oddTile.texture.getSize().y) + (_oddTile.texture.getSize().y / 2)  + offsetY;
+                float newPieceX = x * tileSize + (tileSize / 2.0f) + offsetX + frameBorder;
+                float newPieceY = y * tileSize + (tileSize / 2.0f) + offsetY + frameBorder;
                 if(piece->getColor() == entity::Color::WHITE) {
                     piece->getSprite().setColor(sf::Color::White);
                 }
-                piece->getSprite().setOrigin(piece->getSprite().getTexture()->getSize().x / 2, piece->getSprite().getTexture()->getSize().y / 2);
-                piece->getSprite().setScale(0.9, 0.9);
+                piece->getSprite().setOrigin(piece->getSprite().getTexture()->getSize().x / 2.0f, piece->getSprite().getTexture()->getSize().y / 2.0f);
+                piece->getSprite().setScale(0.9f, 0.9f);
                 piece->getSprite().setPosition(newPieceX, newPieceY);
                 window.draw(piece->getSprite());
             }
@@ -98,20 +95,23 @@ void Board::displayBoard(sf::RenderWindow& window) const {
     }
 }
 
-void Board::displayFrame(sf::RenderWindow& window) const {
-    std::size_t frameSize = BOARD_SIZE * _oddTile.texture.getSize().x + 10;
-    const float offsetX = (window.getSize().x - frameSize) / 2.0f;
-    const float offsetY = (window.getSize().y - frameSize) / 2.0f;
-
-    sf::RectangleShape frame(sf::Vector2f(frameSize, frameSize));
+void Board::displayFrame(sf::RenderWindow& window, float offsetX, float offsetY, std::size_t frameSize) const {
+    sf::RectangleShape frame(sf::Vector2f(static_cast<float>(frameSize), static_cast<float>(frameSize)));
     frame.setPosition(offsetX, offsetY);
     frame.setFillColor(sf::Color::Black);
     window.draw(frame);
 }
 
 void Board::display(sf::RenderWindow& window) const {
-    displayFrame(window);
-    displayBoard(window);
+    const float frameBorder = 5.0f;
+    const std::size_t tileSize = _oddTile.texture.getSize().x;
+    const std::size_t boardSize = BOARD_SIZE * tileSize;
+    const std::size_t frameSize = boardSize + 2 * frameBorder;
+    const float offsetX = (window.getSize().x - frameSize) / 2.0f;
+    const float offsetY = (window.getSize().y - frameSize) / 2.0f;
+
+    displayFrame(window, offsetX, offsetY, frameSize);
+    displayBoard(window, offsetX, offsetY, frameBorder);
 }
 
 }

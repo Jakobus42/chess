@@ -4,6 +4,7 @@ namespace game {
 
 GameManager::GameManager():
 _window(sf::VideoMode::getDesktopMode(), "Chess") { //TODO dont hardcode size
+    std::cout << _window.getSize().x << " " << _window.getSize().y << std::endl;
     _window.setFramerateLimit(60);
 }
 

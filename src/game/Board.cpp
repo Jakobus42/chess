@@ -99,14 +99,18 @@ void Board::displayFrame(sf::RenderWindow& window, float offsetX, float offsetY,
 }
 
 void Board::display(sf::RenderWindow& window) const {
-    const float frameBorder = 5.0f;
-    const std::size_t tileSize = _oddTile.texture.getSize().x;
-    const std::size_t boardSize = BOARD_SIZE * tileSize;
-    const std::size_t frameSize = boardSize + 2 * frameBorder;
-    const float offsetX = (window.getSize().x - frameSize) / 2.0f;
-    const float offsetY = (window.getSize().y - frameSize) / 2.0f;
+    // const float frameBorder = 5.0f;
+    // const std::size_t tileSize = _oddTile.texture.getSize().x;
+    // const std::size_t boardSize = BOARD_SIZE * tileSize;
+    // const std::size_t frameSize = boardSize + 2 * frameBorder;
+    // const float offsetX = (window.getSize().x - frameSize) / 2.0f;
+    // const float offsetY = (window.getSize().y - frameSize) / 2.0f;
+    sf::RectangleShape frame(sf::Vector2f(static_cast<float>(10000), static_cast<float>(100)));
+    frame.setFillColor(sf::Color::Red);
+    window.draw(frame);
 
-    displayFrame(window, offsetX, offsetY, frameSize);
+
+    // displayFrame(window, offsetX, offsetY, frameSize);
     // displayBoard(window, offsetX, offsetY, frameBorder);
 }
 
